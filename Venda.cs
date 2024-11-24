@@ -16,7 +16,13 @@ namespace ProjetoVendaEPagamento
         }
 
         private List<ItemVenda> ItensVendas { get; set; }
-        private Pagamento? Pagamento { get; set; }
+
+        private Pagamento? pagamento;
+        public Pagamento? Pagamento
+        {
+            get { return pagamento; }
+            set { pagamento = value; }
+        }
 
         public Venda()
         {
@@ -33,19 +39,23 @@ namespace ProjetoVendaEPagamento
         public double CalcularTotal()
         {
             double total = 0;
-            int qtdTotal = 0;
-            foreach (ItemVenda item in ItensVendas)
+            foreach (var item in ItensVendas)
             {
-                total += item.GetSubTotal();
-                qtdTotal += item.Quantidade;
-            }
-
-            if (qtdTotal >= 50)
-            {
-                total *= 20 / 100;
+                double desconto = item.Quantidade >= 50 ? 0.2 : 0;
+                total += item.SubTotal * (1 - desconto);
             }
 
             return total;
+        }
+
+        public void MostrarAtributosDaVenda()
+        {
+            foreach (var item in ItensVendas)
+            {
+                item.MostrarAtributos();
+            }
+
+            Console.WriteLine($"\nTotal: R$ {Total:F2}");
         }
     }
 }

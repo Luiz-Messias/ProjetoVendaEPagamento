@@ -6,22 +6,50 @@ List<Produto> produtosDb = new();
 
 void CadastrarProduto()
 {
-    Console.WriteLine("Cadastrando produto...");
+    Console.Write("Deseja cadastrar manualmente ou automático? (m/a)");
+    Console.Write("\nOpção: ");
+    string opcao = Console.ReadLine().ToLower();
 
-    Console.Write("Nome: ");
-    string nome = Console.ReadLine();
+    if (opcao == "m")
+    {
+        Console.WriteLine("Cadastrando produto...");
 
-    Console.Write("Preço: ");
-    double preco = double.Parse(Console.ReadLine());
+        Console.Write("Nome: ");
+        string nome = Console.ReadLine();
 
-    Console.Write("Estoque: ");
-    int estoque = int.Parse(Console.ReadLine());
+        Console.Write("Preço: ");
+        double preco = double.Parse(Console.ReadLine());
 
-    Produto produto = new(nome, preco, estoque);
+        Console.Write("Estoque: ");
+        int estoque = int.Parse(Console.ReadLine());
 
-    produtosDb.Add(produto);
+        Produto produto = new(nome, preco, estoque);
 
-    Console.WriteLine("Produto cadastrado com sucesso!");
+        produtosDb.Add(produto);
+
+        Console.WriteLine("Produto cadastrado com sucesso!");
+    }
+    else if (opcao == "a")
+    {
+        // Instancia uma lista de produtos com alguns produtos
+
+        Console.Write("Produtos cadastro de forma automática");
+        produtosDb.AddRange(new List<Produto>
+        {
+            new("Notebook Dell", 3500, 10),
+            new("Smartphone Samsung", 2200, 15),
+            new("Fone de Ouvido JBL", 299, 50),
+            new("Mouse Logitech", 120, 30),
+            new("Teclado Mecânico Redragon", 450, 20),
+            new("Monitor LG 24''", 1200, 12),
+            new("Cadeira Gamer DXRacer", 890, 8),
+            new("Webcam Full HD Logitech", 329, 25),
+            new("Impressora Multifuncional HP", 750, 5),
+            new("SSD Kingston 500GB", 399, 18)
+         });
+    }
+    else
+        Console.WriteLine("Opção inválida!");
 }
 
 void ListarProdutos()
@@ -47,7 +75,7 @@ ItemVenda AdicionaritensNaVenda()
     Console.Write("Digite o nome do produto: ");
     string nomeProduto = Console.ReadLine();
 
-    Produto produto = produtosDb.Find(p => p.Nome.Equals(nomeProduto, StringComparison.OrdinalIgnoreCase));
+    Produto produto = produtosDb.Find(p => p.Nome.ToLower() == nomeProduto.ToLower());
 
     if (produto == null)
     {
@@ -56,11 +84,7 @@ ItemVenda AdicionaritensNaVenda()
     }
 
     Console.Write("Digite a quantidade: ");
-    if (!int.TryParse(Console.ReadLine(), out int quantidade) || quantidade <= 0)
-    {
-        Console.WriteLine("Quantidade inválida!");
-        return null;
-    }
+    int quantidade = Convert.ToInt32(Console.ReadLine());
 
     if (quantidade > produto.Estoque)
     {
@@ -100,36 +124,37 @@ void RealizarPagamento(Venda venda)
             }
 
             Especie pagamentoEspecie = new(quantia, DateTime.Now, venda.Total);
+
             pagamentoEspecie.RealizarPagamento();
+
+            venda.Pagamento = pagamentoEspecie;
             Console.WriteLine($"Troco: R$ {pagamentoEspecie.Troco:F2}");
+
+            venda.MostrarAtributosDaVenda();
             break;
-        //case 2:
-        //    Console.Write("\nDigite o número do cartão: ");
-        //    string numeroCartao = Console.ReadLine();
-        //    Console.Write("\nDigite a data de validade: ");
-        //    string dataValidade = Console.ReadLine();
-        //    Console.Write("\nDigite o código de segurança: ");
-        //    string codigoSeguranca = Console.ReadLine();
+        case 2:
+            Console.Write("\nDigite o número do cartão: ");
+            string numeroCartao = Console.ReadLine();
 
-        //    Cartao pagamentoCartao = new("Dados corretos", 1, DateTime.Now, venda.Total);
-        //    pagamentoCartao.RealizarPagamento();
-        //    break;
-        //case 3:
-        //    Console.Write("Digite o número do cheque: ");
-        //    int numeroCheque = Convert.ToInt32(Console.ReadLine());
-        //    Console.Write("Digite o banco: ");
-        //    string banco = Console.ReadLine();
-        //    Console.Write("Digite a data de compensação: ");
-        //    string dataCompensacao = Console.ReadLine();
+            Cartao pagamentoCartao = new(numeroCartao, 1, DateTime.Now, venda.Total);
+            venda.Pagamento = pagamentoCartao;
+            pagamentoCartao.RealizarPagamento();
+            venda.MostrarAtributosDaVenda();
+            break;
+        case 3:
+            Console.Write("Digite o número do cheque: ");
+            int numeroCheque = Convert.ToInt32(Console.ReadLine());
 
-        //    Cheque pagamentoCheque = new(numeroCheque, DateTime.Now, 0, DateTime.Now, venda.Total);
-        //    pagamentoCheque.RealizarPagamento();
-        //    break;
+            Cheque pagamentoCheque = new(numeroCheque, DateTime.Now, 0, DateTime.Now, venda.Total);
+            venda.Pagamento = pagamentoCheque;
+
+            pagamentoCheque.RealizarPagamento();
+            venda.MostrarAtributosDaVenda();
+            break;
         default:
             Console.Write("Opção inválida.");
             break;
     }
-
 }
 
 void IniciarVenda()
@@ -171,7 +196,7 @@ int Menu()
     Console.WriteLine("3 - Listar produtos");
     Console.WriteLine("4 - Sair");
     Console.Write("Opção: ");
-    int op = int.Parse(Console.ReadLine());
+    int op = Convert.ToInt32(Console.ReadLine());
     return op;
 }
 
@@ -179,7 +204,7 @@ int op = Menu();
 
 while (op != 4)
 {
-    Console.Clear(); // Limpa o console
+    Console.Clear();
     switch (op)
     {
         case 1:
@@ -196,7 +221,7 @@ while (op != 4)
             break;
     }
 
-     Console.WriteLine("\nPressione qualquer tecla para continuar...");
-     Console.ReadKey(); // Pausa antes de exibir o menu novamente
+    Console.WriteLine("\nPressione qualquer tecla para continuar...");
+    Console.ReadKey();
     op = Menu();
 }

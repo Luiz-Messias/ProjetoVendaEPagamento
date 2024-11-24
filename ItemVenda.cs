@@ -35,5 +35,13 @@ namespace ProjetoVendaEPagamento
         {
             return SubTotal;
         }
+
+        public void MostrarAtributos()
+        {
+            Console.WriteLine($"Produto: {Produto.Nome}");
+            Console.WriteLine($"Preço: R$ {Preco:F2}");
+            Console.WriteLine($"Quantidade: {Quantidade}");
+            Console.WriteLine($"Subtotal: R$ {SubTotal:F2}");
+        }
     }
 }

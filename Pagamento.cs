@@ -13,7 +13,6 @@ namespace ProjetoVendaEPagamento
 
         public void RealizarPagamento()
         {
-            // Realiza o pagamento
             Console.WriteLine($"\nPagamento realizado em {Date.ToShortDateString()} com o total de R$ {Total:C2}");
             Console.WriteLine("Pagamento efetuado com sucesso!");
         }
